@@ -1,4 +1,14 @@
 {
+    "name": "krak/php-inc",
+    "description": "Php inc file generator",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "RJ Garcia",
+            "email": "rj@bighead.net"
+        }
+    ],
     "autoload": {
         "psr-4": {
             "Krak\\PhpInc\\": "src"
