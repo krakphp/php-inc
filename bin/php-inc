@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+$autoload_files = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
+
+foreach ($autoload_files as $file) {
+    if (file_exists($file)) {
+        require_once $file;
+    }
+}
+
+$app = new Symfony\Component\Console\Application();
+$app->add(new Krak\PhpInc\Command\GenerateCommand());
+$app->run();

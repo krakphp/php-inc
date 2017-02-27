@@ -1,0 +1,12 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Krak\\PhpInc\\": "src"
+        },
+        "files": ["src/php-inc.php"]
+    },
+    "require": {
+        "nikic/iter": "^1.4",
+        "symfony/console": "^3.2"
+    }
+}
