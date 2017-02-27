@@ -15,7 +15,15 @@ Install via composer at `krak/php-inc`
 The main interface is the `bin/php-inc` command which allows you to run generate a php source file with all of your project's require's.
 
 ```
-./bin/php-inc {path-to-source} > src/inc.php
+./bin/php-inc php-inc:generate {path-to-source} > src/inc.php
+```
+
+For example, running the command with the path to this projects `src` dir would generate this output:
+
+```php
+<?php
+
+require_once __DIR__ . '/php-inc.php';
 ```
 
 You may want to make sure your `inc.php` file (or whatever you decide to name it) is ignored by version control, and then generate the file when you build your project.
