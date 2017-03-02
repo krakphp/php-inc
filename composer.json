@@ -17,6 +17,6 @@
     },
     "require": {
         "nikic/iter": "^1.4",
-        "symfony/console": "^3.2"
+        "symfony/console": "^3.0"
     }
 }
