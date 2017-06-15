@@ -20,5 +20,8 @@
         "symfony/console": "^3.0",
         "webmozart/path-util": "^2.3"
     },
-    "bin": ["bin/php-inc"]
+    "bin": ["bin/php-inc"],
+    "require-dev": {
+        "peridot-php/peridot": "^1.19"
+    }
 }

@@ -3,7 +3,8 @@
 namespace Krak\PhpInc;
 
 use function iter\reduce,
-    iter\filter;
+    iter\filter,
+    iter\toArray;
 
 /** only match lower case filenames */
 function lowerCaseMatch() {
@@ -71,6 +72,10 @@ function scanSrc($match) {
 
 function genIncFile() {
     return function($base, $files) {
+        $files = toArray($files);
+        usort($files, function($a, $b) {
+            return strcmp($a->getPathname(), $b->getPathname());
+        });
         $include_php = reduce(function($acc, $file) use ($base) {
             return $acc . sprintf(
                 "require_once __DIR__ . '%s';\n",
