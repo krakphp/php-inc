@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.4 - 2017-06-14
+
 ### Fixed
 
 - Files are now sorted by pathname #1
