@@ -1,7 +1,7 @@
 {
     "name": "krak/php-inc",
     "description": "Php inc file generator",
-    "type": "library",
+    "type": "composer-plugin",
     "license": "MIT",
     "authors": [
         {
@@ -16,12 +16,14 @@
         "files": ["src/php-inc.php"]
     },
     "require": {
-        "nikic/iter": "^1.4",
-        "symfony/console": "^3.0",
-        "webmozart/path-util": "^2.3"
+        "composer-plugin-api": "^1.1"
     },
-    "bin": ["bin/php-inc"],
     "require-dev": {
+        "composer/composer": "^1.7",
+        "peridot-php/leo": "^1.6",
         "peridot-php/peridot": "^1.19"
+    },
+    "extra": {
+        "class": "Krak\\PhpInc\\PhpIncPlugin"
     }
 }

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.0 - 2018-12-01
+
+PhpInc now works as a composer plugin which makes configuration and integration dead simple.
+
 ## 0.1.4 - 2017-06-14
 
 ### Fixed
