@@ -1,5 +1,7 @@
 # Php Inc
 
+![PHP Requirements](https://img.shields.io/badge/php-%5E7.1-8892BF.svg)
+
 Php inc is a composer plugin for automatically including certain files into composer's `autoload` and `autoload-dev` `files` config. Given a set of file matchers, on the the `dump-autoload` event, php-inc will automatically include any matched files into the dumped autoloaded files. 
 
 This ameliorates the issues that come about when you want to include certain files that contain functions or maybe multiple classes but don't want to constantly update the composer autoload files configuration which can get hard to deal with when you start including more files.

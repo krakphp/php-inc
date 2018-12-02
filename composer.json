@@ -16,7 +16,8 @@
         "files": ["src/php-inc.php"]
     },
     "require": {
-        "composer-plugin-api": "^1.1"
+        "composer-plugin-api": "^1.1",
+        "php": "^7.1"
     },
     "require-dev": {
         "composer/composer": "^1.7",
