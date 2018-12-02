@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 0.2.1 - 2018-12-02
+
+Fortified the include process to prevent duplicate includes
+
 ## 0.2.0 - 2018-12-01
 
 PhpInc now works as a composer plugin which makes configuration and integration dead simple.
