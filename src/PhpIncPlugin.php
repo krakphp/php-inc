@@ -2,7 +2,7 @@
 
 namespace Krak\PhpInc;
 
-require_once __DIR__ . '/php-inc.php';
+require_once __DIR__ . '/autoload.php';
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;

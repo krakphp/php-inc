@@ -13,7 +13,7 @@
         "psr-4": {
             "Krak\\PhpInc\\": "src"
         },
-        "files": ["src/php-inc.php"]
+        "files": ["src/autoload.php"]
     },
     "require": {
         "composer-plugin-api": "^1.1",
