@@ -2,7 +2,7 @@
 
 ![PHP Requirements](https://img.shields.io/badge/php-%5E7.1-8892BF.svg)
 
-Php inc is a composer plugin for automatically including certain files into composer's `autoload` and `autoload-dev` `files` config. Given a set of file matchers, on the the `dump-autoload` event, php-inc will automatically include any matched files into the dumped autoloaded files. 
+Php inc is a composer plugin for automatically including certain files into composer's `autoload` and `autoload-dev` `files` config. Given a set of file matchers, on the the `dump-autoload` event, php-inc will automatically include any matched files into the dumped autoloaded files.
 
 This ameliorates the issues that come about when you want to include certain files that contain functions or maybe multiple classes but don't want to constantly update the composer autoload files configuration which can get hard to deal with when you start including more files.
 
@@ -60,13 +60,13 @@ Let's go through and explain what each part means and refers to.
 
 ### src-path
 
-`src-path` will determine the path to your source code where any autoload files will be searched in. 
+`src-path` will determine the path to your source code where any autoload files will be searched in.
 
-If you are working with the standard Laravel file structure, you'll want to change the src-path to `app` instead of `src`. 
+If you are working with the standard Laravel file structure, you'll want to change the src-path to `app` instead of `src`.
 
 ### test-path
 
-`test-path` will determine the path to your test code where the autoload-dev files will be searched. 
+`test-path` will determine the path to your test code where the autoload-dev files will be searched.
 
 ### matches
 
@@ -78,11 +78,41 @@ If you are working with the standard Laravel file structure, you'll want to chan
 
 ### matches-dev-test
 
-`matches-dev-test` can be any hierarchy of configured matches to determine how you want the test folder to be searched for files to be included in `autoload-dev.files`. The default configuration ensures that all files that start with a lower case file name, have a `php` extension, and are *not* apart of a `Fixtures` directory will be included in the `autoload-dev.files` composer configuration. 
+`matches-dev-test` can be any hierarchy of configured matches to determine how you want the test folder to be searched for files to be included in `autoload-dev.files`. The default configuration ensures that all files that start with a lower case file name, have a `php` extension, and are *not* apart of a `Fixtures` directory will be included in the `autoload-dev.files` composer configuration.
 
 ## Debugging
 
 If you are ever curious what files are being included, you can simply run `composer dump-autoload -v` and view the php-inc output to see which files are being merged with which composer files definition.
+
+## Managing Dependencies
+
+With extended use, you may come into a situation where one file included needs to be loaded before another. If this comes up, the best solution I've found for now is to prefix those files with an `_` and just create a new file named inc.php which loads them in the correct order.
+
+For example:
+
+```
+src/a.php
+src/b.php
+```
+
+`a.php` depends on `b.php` loading first. To enforce loading order, we'd make the following change:
+
+```
+src/_a.php
+src/_b.php
+src/inc.php
+```
+
+Where `inc.php` is as follows:
+
+```php
+<?php
+
+require_once __DIR__ . '/_b.php';
+require_once __DIR__ . '/_a.php';
+```
+
+When you run `composer dump-autoload`, only `inc.php` will be included and will make sure to include those files correctly.
 
 ## Why is this useful?
 
@@ -92,7 +122,7 @@ Until php includes a spec for function autoloading, creating and using standard 
 
 This is useful for more than just functions however. There are plenty of cases where one file with multiple definitions would make sense to keep together instead of splitting into several files which clutter the filesystem.
 
-This plugin is an attempt to help php devs who use composer to have the ability to 
+This plugin is an attempt to help php devs who use composer to have the ability to
 
 ## Drawbacks
 
