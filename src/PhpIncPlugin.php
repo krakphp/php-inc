@@ -49,50 +49,93 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
         $package = $event->getComposer()->getPackage();
 
         $rootDir = dirname($event->getComposer()->getConfig()->get('vendor-dir'));
-        $phpIncConfig = $package->getExtra()['php-inc'] ?? [];
-
-        $sourceDir = $rootDir . '/' . ($phpIncConfig['src-path'] ?? 'src');
-        $testDir = $rootDir . '/' . ($phpIncConfig['test-path'] ?? 'tests');
-        $standardMatches = [
-            ['type' => 'ext', 'exts' => ['php']],
-            ['type' => 'lowerCase'],
-        ];
-        $matches = $phpIncConfig['matches'] ?? [
-            'type' => 'and',
-            'matches' => \array_merge($standardMatches, [
-                ['type' => 'excludePath', 'path' => '@.*/(Resources|Tests)/.*@']
-            ])
-        ];
-        $devSrcMatches = $phpIncConfig['matches-dev-src'] ?? [
-            'type' => 'and',
-            'matches' => \array_merge($standardMatches, [
-                ['type' => 'includePath', 'path' => '@.*/Tests/.*@'],
-                ['type' => 'excludePath', 'path' => '@.*/Tests/.*/Fixtures/.*@'],
-            ]),
-        ];
-        $devTestMatches = $phpIncConfig['matches-dev-test'] ?? [
-            'type' => 'and',
-            'matches' => \array_merge($standardMatches, [
-                ['type' => 'excludePath', 'path' => '@.*/Fixtures/.*@'],
-            ]),
-        ];
+        $phpIncConfig = $package->getExtra()['php-inc'] ?? $this->createDefaultConfig();
 
         $rootPrefix = $rootDir . '/';
-        $additionalAutoloadFiles = _toArray(scannedFilesToIncludePaths($rootPrefix, scanSrc(astMatchFactory($matches))($sourceDir)));
-        $additionalDevSrcAutoloadFiles = _toArray(scannedFilesToIncludePaths($rootPrefix, scanSrc(astMatchFactory($devSrcMatches))($sourceDir)));
-        $additionalDevTestAutoloadFiles = _toArray(scannedFilesToIncludePaths($rootPrefix, scanSrc(astMatchFactory($devTestMatches))($testDir)));
+
+        $srcPath = $phpIncConfig['src-path'] ?? null;
+        $testPath = $phpIncConfig['test-path'] ?? null;
+        $matches = $phpIncConfig['matches'] ?? null;
+        $devSrcMatches = $phpIncConfig['matches-dev-src'] ?? null;
+        $devTestMatches = $phpIncConfig['matches-dev-test'] ?? null;
+
+        $additionalAutoloadFiles = [];
+        $additionalAutoloadDevFiles = [];
+
+        if ($srcPath) {
+            $sourceDir = $rootDir . '/' . $srcPath;
+            $additionalAutoloadFiles = $this->matchFiles($rootPrefix, $matches, $sourceDir);
+            $additionalAutoloadDevFiles = $this->matchFiles($rootPrefix, $devSrcMatches, $sourceDir);
+        }
+        if ($testPath) {
+            $testDir = $rootDir . '/' . $testPath;
+            $additionalAutoloadDevFiles = \array_merge($additionalAutoloadDevFiles, $this->matchFiles($rootPrefix, $devTestMatches, $testDir));
+        }
 
         if ($event->getIO()->isVerbose()) {
             $event->getIO()->write('<info>php-inc generating autoload files.</info>');
             $event->getIO()->write('Autoload Files:' . "\n" . \implode("\n", $additionalAutoloadFiles));
-            $event->getIO()->write('Autoload Dev Files:' . "\n" . \implode("\n", \array_merge($additionalDevSrcAutoloadFiles, $additionalDevTestAutoloadFiles)));
+            $event->getIO()->write('Autoload Dev Files:' . "\n" . \implode("\n", $additionalAutoloadDevFiles));
         }
 
         $autoload = $package->getAutoload();
         $autoload['files'] = \array_unique(\array_merge($autoload['files'] ?? [], $additionalAutoloadFiles));
         $package->setAutoload($autoload);
         $autoloadDev = $package->getDevAutoload();
-        $autoloadDev['files'] = \array_unique(\array_merge($autoload['files'] ?? [], $additionalDevSrcAutoloadFiles, $additionalDevTestAutoloadFiles));
+        $autoloadDev['files'] = \array_unique(\array_merge($autoload['files'] ?? [], $additionalAutoloadDevFiles));
         $package->setDevAutoload($autoloadDev);
+    }
+
+    private function matchFiles(string $rootPrefix, ?array $matches, string $dir): array {
+        if (!$matches) {
+            return [];
+        }
+
+        return _toArray(scannedFilesToIncludePaths($rootPrefix, scanSrc(astMatchFactory($matches))($dir)));
+    }
+
+    private function writeVerbose(IOInterface $io, string $line) {
+        if (!$io->isVerbose()) {
+            return;
+        }
+
+        $io->write($line);
+    }
+
+    /** @return mixed[] */
+    private function createDefaultConfig(): array {
+        // this is pulled directly from the README config
+        return json_decode(<<<JSON
+{
+  "src-path": "src",
+  "test-path": "tests",
+  "matches": {
+    "type": "and",
+    "matches": [
+      {"type":  "ext", "exts":  ["php"]},
+      {"type":  "lowerCase"},
+      {"type":  "excludePath", "path":  "@.*/(Resources|Tests)/.*@"}
+    ]
+  },
+  "matches-dev-src": {
+    "type": "and",
+    "matches": [
+      {"type":  "ext", "exts":  ["php"]},
+      {"type":  "lowerCase"},
+      {"type":  "includePath", "path":  "@.*/Tests/.*@"},
+      {"type":  "excludePath", "path":  "@.*/Tests/.*/Fixtures/.*@"}
+    ]
+  },
+  "matches-dev-test": {
+    "type": "and",
+    "matches": [
+      {"type":  "ext", "exts":  ["php"]},
+      {"type":  "lowerCase"},
+      {"type":  "excludePath", "path":  "@.*/Fixtures/.*@"}
+    ]
+  }
+}
+JSON
+        );
     }
 }

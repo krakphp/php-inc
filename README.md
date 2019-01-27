@@ -25,7 +25,7 @@ Here's an example of the default configuration that is applied:
   "extra": {
     "php-inc": {
       "src-path": "src",
-      "test-path": "test",
+      "test-path": "tests",
       "matches": {
         "type": "and",
         "matches": [
