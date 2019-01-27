@@ -49,12 +49,14 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
         $package = $event->getComposer()->getPackage();
 
         $rootDir = dirname($event->getComposer()->getConfig()->get('vendor-dir'));
-        $phpIncConfig = $package->getExtra()['php-inc'] ?? $this->createDefaultConfig();
+        $phpIncConfig = \array_merge($this->createDefaultConfig(), $package->getExtra()['php-inc'] ?? []);
 
         $rootPrefix = $rootDir . '/';
 
         $srcPath = $phpIncConfig['src-path'] ?? null;
+        $srcDir = $srcPath ? $rootDir . '/' . $srcPath : null;
         $testPath = $phpIncConfig['test-path'] ?? null;
+        $testDir = $testPath ? $rootDir . '/' . $testPath : null;
         $matches = $phpIncConfig['matches'] ?? null;
         $devSrcMatches = $phpIncConfig['matches-dev-src'] ?? null;
         $devTestMatches = $phpIncConfig['matches-dev-test'] ?? null;
@@ -62,12 +64,12 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
         $additionalAutoloadFiles = [];
         $additionalAutoloadDevFiles = [];
 
-        if ($srcPath) {
+        if ($srcDir && \file_exists($srcDir)) {
             $sourceDir = $rootDir . '/' . $srcPath;
             $additionalAutoloadFiles = $this->matchFiles($rootPrefix, $matches, $sourceDir);
             $additionalAutoloadDevFiles = $this->matchFiles($rootPrefix, $devSrcMatches, $sourceDir);
         }
-        if ($testPath) {
+        if ($testPath && \file_exists($testDir)) {
             $testDir = $rootDir . '/' . $testPath;
             $additionalAutoloadDevFiles = \array_merge($additionalAutoloadDevFiles, $this->matchFiles($rootPrefix, $devTestMatches, $testDir));
         }
@@ -82,7 +84,7 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
         $autoload['files'] = \array_unique(\array_merge($autoload['files'] ?? [], $additionalAutoloadFiles));
         $package->setAutoload($autoload);
         $autoloadDev = $package->getDevAutoload();
-        $autoloadDev['files'] = \array_unique(\array_merge($autoload['files'] ?? [], $additionalAutoloadDevFiles));
+        $autoloadDev['files'] = \array_unique(\array_merge($autoloadDev['files'] ?? [], $additionalAutoloadDevFiles));
         $package->setDevAutoload($autoloadDev);
     }
 
@@ -135,7 +137,6 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
     ]
   }
 }
-JSON
-        );
+JSON, true);
     }
 }
