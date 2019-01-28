@@ -107,7 +107,7 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
     /** @return mixed[] */
     private function createDefaultConfig(): array {
         // this is pulled directly from the README config
-        return json_decode(<<<JSON
+        $content = <<<JSON
 {
   "src-path": "src",
   "test-path": "tests",
@@ -137,6 +137,7 @@ class PhpIncPlugin implements PluginInterface, EventSubscriberInterface
     ]
   }
 }
-JSON, true);
+JSON;
+        return json_decode($content, true);
     }
 }
