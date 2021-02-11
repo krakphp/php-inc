@@ -16,11 +16,11 @@
         "files": ["src/autoload.php"]
     },
     "require": {
-        "composer-plugin-api": "^1.1",
+        "composer-plugin-api": "^1.1 || ^2.0",
         "php": "^7.1"
     },
     "require-dev": {
-        "composer/composer": "^1.7",
+        "composer/composer": "^2.0",
         "peridot-php/leo": "^1.6",
         "peridot-php/peridot": "^1.19"
     },
